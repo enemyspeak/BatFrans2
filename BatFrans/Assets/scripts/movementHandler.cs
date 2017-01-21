@@ -5,10 +5,10 @@ using UnityEngine;
 public class movementHandler : MonoBehaviour {
 	private bool flipped = false;
 
-	[SerializeField] private float normal_acceleration = 0.025f;
+	[SerializeField] private float normal_acceleration = 0.5f;
 	[SerializeField] private float drag_active = 0.9f;
-	[SerializeField] private float drag_passive = 0.96f;
-	[SerializeField] private int max_speed = 1;
+	[SerializeField] private float drag_passive = 0.97f;
+	[SerializeField] private int max_speed = 50;
 	[SerializeField] private float deadZone = 0.005f;
 	[SerializeField] private Vector2 velocity = new Vector2(0,0);
 
@@ -23,9 +23,12 @@ public class movementHandler : MonoBehaviour {
 		anim.Play("idleStand");
 	}
 
-	void OnTriggerEnter2D (Collider2D c) {
-		if(c.CompareTag("Room")) {
-			
+	void OnTriggerEnter2D (Collider2D collider) {
+		if(collider.CompareTag("Room")) {
+			Vector2 roomPosition = collider.gameObject.transform.position;
+			Debug.Log (roomPosition);
+			Camera.main.gameObject.GetComponent<cameraHandler> ().panToWorldPosition (roomPosition);
+//			Camera.main.GetComponent<CameraHandler>().panToWorldPosition (roomPosition);;
 		}
 	}
 
@@ -86,7 +89,7 @@ public class movementHandler : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
 		max_speed_sq = max_speed ^ 2;
 
 		bool x_has_input = false;
@@ -144,8 +147,9 @@ public class movementHandler : MonoBehaviour {
 		velocity = new Vector2 (temp_x_vel * temp_drag, temp_y_vel * temp_drag);
 
 		Vector2 currentPosition = transform.position;
-		transform.position = new Vector2(currentPosition.x + velocity.x, currentPosition.y + velocity.y);
-
+//		Vector2 targetPosition = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
+//		transform.position = Vector2.Lerp (currentPosition, targetPosition, );
+		transform.position = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
 //		previousVelocity = velocity;
 
 		doAnimation();

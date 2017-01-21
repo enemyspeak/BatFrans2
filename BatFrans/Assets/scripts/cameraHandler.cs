@@ -5,9 +5,6 @@ using UnityEngine;
 public class cameraHandler : MonoBehaviour {
 	public GameObject player;
 
-	private float verticalOffset;
-	private float initialOffset;
-
 	private Vector2 playerPosition;
 	private Vector2 target;
 
@@ -18,10 +15,7 @@ public class cameraHandler : MonoBehaviour {
 	void Start () {
 		playerPosition = player.transform.position;
 		target = transform.position;
-		transform.position = new Vector2(target.x,target.y + verticalOffset);
-		target.y -= verticalOffset;
-
-		initialOffset = verticalOffset;
+		transform.position = new Vector2(target.x,target.y);
 	}
 		
 	void OnTriggerEnter2D (Collider2D c) {
@@ -54,24 +48,39 @@ public class cameraHandler : MonoBehaviour {
 	void Update () {
 		if (followPlayer) {
 			playerPosition = player.transform.position;
-			Vector2 currentPosition = target;
+//			Vector2 currentPosition = target;
+
+			Vector2 currentPosition = transform.position;
+
 			target = new Vector2 (
 				Mathf.Lerp (currentPosition.x, playerPosition.x, 3.0f * Time.deltaTime),
-				Mathf.Lerp (currentPosition.y, playerPosition.y, 3.0f * Time.deltaTime));
-
-			currentPosition = transform.position;
-			currentPosition.y -= verticalOffset;
+				Mathf.Lerp (currentPosition.y, playerPosition.y, 3.0f * Time.deltaTime)
+			);
+//
+//			currentPosition.y -= verticalOffset;
 
 			//		target = clipCamera( -2.8f,-0.8f,rightHorizontal,1.8f - verticalOffset );
 
-			float currentOffset = verticalOffset;
-			verticalOffset = Mathf.Lerp (currentOffset, initialOffset, 1.0f * Time.deltaTime);
-
-			transform.position = new Vector3 (
-				Mathf.Lerp (currentPosition.x, target.x, 3.0f * Time.deltaTime),
-				Mathf.Lerp (currentPosition.y, target.y, 3.0f * Time.deltaTime) + verticalOffset,
-				-10);
+//			float currentOffset = verticalOffset;
+//			verticalOffset = Mathf.Lerp (currentOffset, initialOffset, 1.0f * Time.deltaTime);
 		}
+		lerpToPosition ( target);
+	}
+
+	void lerpToPosition ( Vector2 targetPosition) {
+		Vector2 currentPosition = transform.position;
+		transform.position = new Vector3 (
+			Mathf.Lerp (currentPosition.x, target.x, 3.0f * Time.deltaTime),
+			Mathf.Lerp (currentPosition.y, target.y, 3.0f * Time.deltaTime),
+			-10);
+//		target = targetPosition;
+	}
+
+	public void panToWorldPosition (Vector2 targetPosition) {
+//		Vector2 currentPosition = transform.position;
+		target = targetPosition;
+
+//		lerpToPosition (targetPosition);
 	}
 
 //	Vector2 clipCamera ( float lowerX,float lowerY, float upperX, float upperY ) {
