@@ -35,23 +35,23 @@
 
 //				if (iMouse.z > 0.) 
 //				{
-					d = smoothstep(4.5,.5,length(float2(0.2,0.2) - i.uv.xy));
+//					d = smoothstep(4.5,.5,length(float2(0.0,0.0) - i.uv.xy));
 //				}
 //				else
 //				{
-//					float t = mul(_Time.y,2.); //_Time.y*2.;
-//					float2 pos = frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
-//					float amp = 1.-step(.05,frac(t));
-//					d = -amp*smoothstep(2.5,.5,length(pos - i.uv.xy));
+					float t = _Time.y*2.;
+					float2 pos = frac(floor(t)*float2(0.456665,0.708618));//*_ScreenParams.xy;
+					float amp = 1.-step(.05,frac(t));
+					d = -amp*smoothstep(2.5,.5,length(pos - i.uv.xy));
 //					d = smoothstep(2.5,.5,length(pos - i.uv.xy));
 //				}
 
 				d += -(p11-.5)*2. + (p10 + p01 + p21 + p12 - 2.);
 				d *= .99; // dampening
-//				d *= min(0.1,float(_Time.y));//float(iFrame)); // clear the buffer at iFrame == 0
+//				d *= min(0.1,float(_Time.y/60)); // clear the buffer at iFrame == 0
 				d = d*.5 + .5;
 
-				return float4(c);//, 0, 0, 0);
+				return float4(d, 0, 0, 0);
 			}
 			ENDCG
 		}
