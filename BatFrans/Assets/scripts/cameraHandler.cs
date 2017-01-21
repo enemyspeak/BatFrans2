@@ -23,8 +23,7 @@ public class cameraHandler : MonoBehaviour {
 
 		initialOffset = verticalOffset;
 	}
-
-
+		
 	void OnTriggerEnter2D (Collider2D c) {
 //		if(c.CompareTag("OneWayPlatform")) {
 //			touchingPlatforms++;

@@ -23,6 +23,21 @@ public class movementHandler : MonoBehaviour {
 		anim.Play("idleStand");
 	}
 
+	void OnTriggerEnter2D (Collider2D c) {
+		if(c.CompareTag("Room")) {
+			
+		}
+	}
+
+	void OnTriggerExit2D (Collider2D c) {
+		//		if(c.CompareTag("OneWayPlatform") && touchingPlatforms-- == 1) {
+		//			jumping = true;
+		//			//	isBackground = false;
+		//			srenderer.sortingOrder = 0;
+		//			//  jumpVel = 0;
+		//		}
+	}
+
 //	void OnTriggerEnter2D (Collider2D c) {
 //		if(c.CompareTag("OneWayPlatform")) {
 //			touchingPlatforms++;
