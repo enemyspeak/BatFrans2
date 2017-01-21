@@ -9,13 +9,16 @@ public class movementHandler : MonoBehaviour {
 	[SerializeField] private float drag_active = 0.9f;
 	[SerializeField] private float drag_passive = 0.97f;
 	[SerializeField] private int max_speed = 50;
-	[SerializeField] private float deadZone = 0.005f;
+//	[SerializeField] private float deadZone = 0.005f;
 	[SerializeField] private Vector2 velocity = new Vector2(0,0);
 
 	private int max_speed_sq;
 	private Vector2 roomPosition;
 
 	private bool tweening_rooms = false;
+	private bool hit_stun = false;
+
+	private int hearts = 3;
 
 	private Animator anim;
 	private SpriteRenderer srenderer;
@@ -27,14 +30,14 @@ public class movementHandler : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D (Collider2D collider) {
-		if(collider.CompareTag("Room")) {
+		if (collider.CompareTag ("Room")) {
 			Vector2 currentPosition = transform.position;
 			roomPosition = collider.gameObject.transform.position;
 //			Debug.Log (roomPosition);
 			Camera.main.gameObject.GetComponent<cameraHandler> ().panToWorldPosition (roomPosition);
 //			Camera.main.GetComponent<CameraHandler>().panToWorldPosition (roomPosition);;
 		
-			velocity = new Vector2 (velocity.x * 0.5f,velocity.y * 0.5f); // reduce speed by half when changing rooms
+			velocity = new Vector2 (velocity.x * 0.5f, velocity.y * 0.5f); // reduce speed by half when changing rooms
 		
 //			float pushAngle = Mathf.Atan2 (currentPosition.y - roomPosition.y, currentPosition.x - roomPosition.x);
 //
@@ -48,13 +51,37 @@ public class movementHandler : MonoBehaviour {
 			}
 
 			tweening_rooms = true;
-			StartCoroutine(disableControlsLockout());
+			StartCoroutine (disableControlsLockout ());
+		} else if (collider.CompareTag ("Hurt")) {
+			if (hit_stun) { // if already hit, don't do this again.
+				return;
+			}
+			hit_stun = true;
+			hearts--;
+
+			// TODO animation hook here
+			// TODO push the player out of the collider- probably using -velocity
+			velocity = -velocity;
+			StartCoroutine (flashSprite ());
+			StartCoroutine (disableControlsLockout ());
 		}
+	}
+		
+	IEnumerator flashSprite() {
+		for(var n = 0; n < 4; n++)
+		{
+			srenderer.enabled = true;
+			yield return new WaitForSeconds(0.1f);
+			srenderer.enabled = false;
+			yield return new WaitForSeconds(0.1f);
+		}
+		srenderer.enabled = true;
 	}
 
 	IEnumerator disableControlsLockout() {
 		yield return new WaitForSeconds(1);
 		tweening_rooms = false;
+		hit_stun = false;
 //		Debug.Log ("enabled");
 	}
 
@@ -91,7 +118,10 @@ public class movementHandler : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		Vector2 currentPosition = transform.position;
-		if (tweening_rooms) {
+		if (hit_stun) {
+			transform.position = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
+
+		} else if (tweening_rooms) {
 			transform.position = new Vector2 (//Vector2.Lerp (transform.position, roomPosition, 1 );
 				Mathf.Lerp (currentPosition.x, roomPosition.x, 0.3f * Time.deltaTime),
 				Mathf.Lerp (currentPosition.y, roomPosition.y, 0.3f * Time.deltaTime)
