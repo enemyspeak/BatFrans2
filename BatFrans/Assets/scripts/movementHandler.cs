@@ -13,6 +13,9 @@ public class movementHandler : MonoBehaviour {
 	[SerializeField] private Vector2 velocity = new Vector2(0,0);
 
 	private int max_speed_sq;
+	private Vector2 roomPosition;
+
+	private bool tweening_rooms = false;
 
 	private Animator anim;
 	private SpriteRenderer srenderer;
@@ -25,11 +28,34 @@ public class movementHandler : MonoBehaviour {
 
 	void OnTriggerEnter2D (Collider2D collider) {
 		if(collider.CompareTag("Room")) {
-			Vector2 roomPosition = collider.gameObject.transform.position;
-			Debug.Log (roomPosition);
+			Vector2 currentPosition = transform.position;
+			roomPosition = collider.gameObject.transform.position;
+//			Debug.Log (roomPosition);
 			Camera.main.gameObject.GetComponent<cameraHandler> ().panToWorldPosition (roomPosition);
 //			Camera.main.GetComponent<CameraHandler>().panToWorldPosition (roomPosition);;
+		
+			velocity = new Vector2 (velocity.x * 0.5f,velocity.y * 0.5f); // reduce speed by half when changing rooms
+		
+//			float pushAngle = Mathf.Atan2 (currentPosition.y - roomPosition.y, currentPosition.x - roomPosition.x);
+//
+//			float d = (currentPosition.y - roomPosition.y) ^ 2 + (currentPosition.x - roomPosition.x) ^ 2;
+//			d *= 0.1f;
+			if ((currentPosition.x < roomPosition.x + Screen.width / 100 / 2) && (currentPosition.x > roomPosition.x - Screen.width / 100 / 2)) {
+				roomPosition.x = currentPosition.x;
+			} 
+			if ((currentPosition.y < roomPosition.y + Screen.height / 100 / 2) && (currentPosition.y > roomPosition.y - Screen.height / 100 / 2)) {
+				roomPosition.y = currentPosition.y;
+			}
+
+			tweening_rooms = true;
+			StartCoroutine(disableControlsLockout());
 		}
+	}
+
+	IEnumerator disableControlsLockout() {
+		yield return new WaitForSeconds(1);
+		tweening_rooms = false;
+//		Debug.Log ("enabled");
 	}
 
 	void OnTriggerExit2D (Collider2D c) {
@@ -40,32 +66,6 @@ public class movementHandler : MonoBehaviour {
 		//			//  jumpVel = 0;
 		//		}
 	}
-
-//	void OnTriggerEnter2D (Collider2D c) {
-//		if(c.CompareTag("OneWayPlatform")) {
-//			touchingPlatforms++;
-//			//	var maxDistance = (c.transform.localScale.y + transform.localScale.y) / 2;
-//			if(velocity.y < 0 && transform.position.y - c.transform.position.y * Time.fixedDeltaTime > deadZone) {
-//				jumping = false;
-//				//	isBackground = true;
-//				srenderer.sortingOrder = -2;
-//				jumpVel = 0;
-//				velocity = new Vector2(velocity.x,0);
-//				Vector2 pos = transform.position;
-//				pos.y = c.transform.position.y + 0.344f + deadZone;
-//				transform.position = pos;
-//			}
-//		}
-//	}
-
-//	void OnTriggerExit2D (Collider2D c) {
-//		if(c.CompareTag("OneWayPlatform") && touchingPlatforms-- == 1) {
-//			jumping = true;
-//			//	isBackground = false;
-//			srenderer.sortingOrder = 0;
-//			//  jumpVel = 0;
-//		}
-//	}
 
 	bool op_xor(bool a,bool b) {
 		return ((a || b) && (!(a && b)));
@@ -90,67 +90,72 @@ public class movementHandler : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		max_speed_sq = max_speed ^ 2;
+		Vector2 currentPosition = transform.position;
+		if (tweening_rooms) {
+			transform.position = new Vector2 (//Vector2.Lerp (transform.position, roomPosition, 1 );
+				Mathf.Lerp (currentPosition.x, roomPosition.x, 0.3f * Time.deltaTime),
+				Mathf.Lerp (currentPosition.y, roomPosition.y, 0.3f * Time.deltaTime)
+			);				
+		} else {
 
-		bool x_has_input = false;
-		bool y_has_input = false;
+			max_speed_sq = max_speed ^ 2;
 
-		if (Input.GetAxis("Horizontal") != 0) 
-		{
-			x_has_input = true;
-		}
+			bool x_has_input = false;
+			bool y_has_input = false;
 
-		if (Input.GetAxis("Vertical") != 0) 
-		{
-			y_has_input = true;
-		}
-
-		float temp_x_accel = Input.GetAxis("Horizontal");
-		float temp_y_accel = Input.GetAxis("Vertical");
-
-		Vector2 temp_norm_accel = new Vector2(temp_x_accel,temp_y_accel);
-
-		temp_x_accel = temp_norm_accel.x * normal_acceleration;
-		temp_y_accel = temp_norm_accel.y * normal_acceleration;
-
-		float temp_x_vel = velocity.x;
-		float temp_y_vel = velocity.y;
-
-		float cur_speed = magnitude_2d (velocity.x, velocity.y);
-
-		if (normal_acceleration + cur_speed > max_speed) {
-
-			float accel_magnitude = max_speed - cur_speed;
-			if (accel_magnitude < 0) { 
-				accel_magnitude = 0;
+			if (Input.GetAxis("Horizontal") != 0) 
+			{
+				x_has_input = true;
 			}
 
-			temp_x_accel = temp_norm_accel.x * accel_magnitude;
-			temp_y_accel = temp_norm_accel.y * accel_magnitude;
+			if (Input.GetAxis("Vertical") != 0) 
+			{
+				y_has_input = true;
+			}
+
+			float temp_x_accel = Input.GetAxis("Horizontal");
+			float temp_y_accel = Input.GetAxis("Vertical");
+
+			Vector2 temp_norm_accel = new Vector2(temp_x_accel,temp_y_accel);
+
+			temp_x_accel = temp_norm_accel.x * normal_acceleration;
+			temp_y_accel = temp_norm_accel.y * normal_acceleration;
+
+			float temp_x_vel = velocity.x;
+			float temp_y_vel = velocity.y;
+
+			float cur_speed = magnitude_2d (velocity.x, velocity.y);
+
+			if (normal_acceleration + cur_speed > max_speed) {
+
+				float accel_magnitude = max_speed - cur_speed;
+				if (accel_magnitude < 0) { 
+					accel_magnitude = 0;
+				}
+
+				temp_x_accel = temp_norm_accel.x * accel_magnitude;
+				temp_y_accel = temp_norm_accel.y * accel_magnitude;
+			}
+
+			temp_x_vel += temp_x_accel;
+			temp_y_vel += temp_y_accel;
+
+			float temp_vel = magnitude_2d_sq (temp_x_vel, temp_y_vel);
+			if (Mathf.Abs (temp_vel) > max_speed_sq) {
+				temp_x_vel = velocity.x;
+				temp_y_vel = velocity.y;
+			}
+
+
+			float temp_drag = drag_passive;
+			if (y_has_input || x_has_input) {
+				temp_drag = drag_active;
+			}
+				
+			velocity = new Vector2 (temp_x_vel * temp_drag, temp_y_vel * temp_drag);
+
+			transform.position = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
 		}
-
-		temp_x_vel += temp_x_accel;
-		temp_y_vel += temp_y_accel;
-
-		float temp_vel = magnitude_2d_sq (temp_x_vel, temp_y_vel);
-		if (Mathf.Abs (temp_vel) > max_speed_sq) {
-			temp_x_vel = velocity.x;
-			temp_y_vel = velocity.y;
-		}
-
-
-		float temp_drag = drag_passive;
-		if (y_has_input || x_has_input) {
-			temp_drag = drag_active;
-		}
-			
-		velocity = new Vector2 (temp_x_vel * temp_drag, temp_y_vel * temp_drag);
-
-		Vector2 currentPosition = transform.position;
-//		Vector2 targetPosition = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
-//		transform.position = Vector2.Lerp (currentPosition, targetPosition, );
-		transform.position = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
-//		previousVelocity = velocity;
 		doSineWave();
 		doAnimation();
 	}
