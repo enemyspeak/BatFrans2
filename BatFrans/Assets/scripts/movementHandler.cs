@@ -5,11 +5,11 @@ using UnityEngine;
 public class movementHandler : MonoBehaviour {
 	private bool flipped = false;
 
-	[SerializeField] private float normal_acceleration = 4;
+	[SerializeField] private float normal_acceleration = 0.025f;
 	[SerializeField] private float drag_active = 0.9f;
-	[SerializeField] private float drag_passive = 1f;
-	[SerializeField] private int max_speed = 30;
-	[SerializeField] private float deadZone = 0.002f;
+	[SerializeField] private float drag_passive = 0.96f;
+	[SerializeField] private int max_speed = 1;
+	[SerializeField] private float deadZone = 0.005f;
 	[SerializeField] private Vector2 velocity = new Vector2(0,0);
 
 	private int max_speed_sq;
