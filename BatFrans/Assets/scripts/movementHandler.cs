@@ -60,7 +60,7 @@ public class movementHandler : MonoBehaviour {
 			hearts--;
 
 			// TODO animation hook here
-			// TODO push the player out of the collider- probably using -velocity
+
 			velocity = -velocity;
 			StartCoroutine (flashSprite ());
 			StartCoroutine (disableControlsLockout ());
@@ -113,6 +113,11 @@ public class movementHandler : MonoBehaviour {
 		} else {
 			return new Vector2(x/mag, y/mag);
 		}
+	}
+
+	void doEcholocate () {
+		// send shader start pos and angle
+
 	}
 
 	// Update is called once per frame

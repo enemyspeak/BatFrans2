@@ -1,6 +1,10 @@
 ﻿Shader "Custom/wave" {
 
 	Properties {
+
+//			float2 soundSource;
+//		_SourcePosition ("SoundSource", Range (0, 1) ) = 0.5 
+	    _SourcePosition ("SourcePosition", Vector) = (0,0,0,1)
 		_MainTex ("Texture", 2D) = "white" {}
 		_rt0 ("RenderTexture", 2D) = "white" {}
 	}
@@ -8,51 +12,96 @@
 	SubShader {
 		Pass {
 			CGPROGRAM
-
-			#pragma vertex MyVertexProgram
-			#pragma fragment MyFragmentProgram
-
+			#pragma vertex vert_img
+			#pragma fragment frag
+		
 			#include "UnityCG.cginc"
 
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
-			sampler2D _rt0;
-			float4 _rt0_ST;
+			uniform float4 _SourcePosition;
+			uniform sampler2D _rt0;
 
-			struct VertexData {
-				float4 position : POSITION;
-				float2 uv : TEXCOORD0;
-			};
+			float4 frag(v2f_img i) : COLOR {
+				float3 e = float3(float2(1.,1.)/_ScreenParams.xy,0.);
+				float2 q = i.uv.xy/_ScreenParams.xy;
 
-			struct Interpolators {
-				float4 position : SV_POSITION;
-				float2 uv : TEXCOORD0;
-			};
+				float4 c = tex2D(_rt0, q);
 
-			Interpolators MyVertexProgram (VertexData v) {
-				Interpolators i;
-				i.position = mul(UNITY_MATRIX_MVP, v.position);
-				i.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				return i;
+				float p11 = c.x;
+
+				float p10 = tex2D(_rt0, q-e.zy).x;
+				float p01 = tex2D(_rt0, q-e.xz).x;
+				float p21 = tex2D(_rt0, q+e.xz).x;
+				float p12 = tex2D(_rt0, q+e.zy).x;
+
+				float d = 0.;
+
+//				if (iMouse.z > 0.) 
+//				{
+//					d = smoothstep(4.5,.5,length(iMouse.xy - fragCoord.xy));
+//				}
+//				else
+//				{
+					float t = mul(_Time.y,2.); //_Time.y*2.;
+					float2 pos = frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
+					float amp = 1.-step(.05,frac(t));
+					d = -amp*smoothstep(2.5,.5,length(pos - i.uv.xy));
+//				}
+
+				d += -(p11-.5)*2. + (p10 + p01 + p21 + p12 - 2.);
+				d *= .99; // dampening
+				d *= min(1.0,_Time.y);//float(iFrame)); // clear the buffer at iFrame == 0
+				d = d*.5 + .5;
+
+				return float4(d, 0, 0, 0);
 			}
-
-			float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
-//			    float2 q = i.uv.xy/_ScreenParams.xy;
-				float2 q = i.uv.xy;
-//			    return float4(i.uv.xy,1.,1.0);
-
-
-			    float h = tex2D(_rt0, q).x;
-
-//			    return float4(c,1.0,1.0,1.0);
+			ENDCG
+		}
+	}
+}
 
 
-			    float sh = 1.35 - h*2.;
-			    float3 c =
-			       float3(exp(pow(sh-.75,2.)*-10.),
-			            exp(pow(sh-.50,2.)*-20.),
-			            exp(pow(sh-.25,2.)*-10.));
-			    return float4(c,1.0);
+
+//			   float3 e = float3(float2(1.0,1.0)/_ScreenParams.xy,0.0);
+//			   float2 q = i.uv.xy;
+//
+//			   float4 c = tex2D(_rt0, q);
+//			   
+//			   float p11 = c.x;
+//			   
+//			   float p10 = tex2D(_rt0, q-e.zy).x;
+//			   float p01 = tex2D(_rt0, q-e.xz).x;
+//			   float p21 = tex2D(_rt0, q+e.xz).x;
+//			   float p12 = tex2D(_rt0, q+e.zy).x;
+//			   
+//			   float d = 0.;
+//
+//			   // Mouse interaction:
+//			   d = smoothstep(4.5,0.5,length(float2(2.0,2.0) - i.uv.xy));
+//
+//
+//			   // The actual propagation:
+//			   d += -(p11-.5)*2. + (p10 + p01 + p21 + p12 - 2.);
+//			   d *= .99; // dampening
+////			   d *= min(1.,float(iFrame)); // clear the buffer at iFrame == 0
+//			   d = d*.5 + .5;
+//			   
+//			   return float4(e, 1.0);
+////			    float2 q = i.uv.xy/_ScreenParams.xy;
+//				float2 q = i.uv.xy;
+////			    return float4(i.uv.xy,1.,1.0);
+//
+//
+//			    float h = tex2D(_rt0, q).x;
+//
+////			    return float4(c,1.0,1.0,1.0);
+//
+//
+//			    float sh = 1.35 - h*2.;
+//			    float3 c =
+//			       float3(exp(pow(sh-.75,2.)*-10.),
+//			            exp(pow(sh-.50,2.)*-20.),
+//			            exp(pow(sh-.25,2.)*-10.));
+//			    return float4(c,1.0);
 //			    float3 e = float3(float2(1.0,1.0)/_ScreenParams.xy,0.0);
 ////
 //			    float p10 = tex2D(_rt0, q-e.zy).x;
@@ -69,12 +118,12 @@
 //			    float diffuse2 = dot(grad,light);
 //			    float spec = pow(max(0.0,-reflect(light,grad).z),32.0);
 //			    return float4(e,1.0);// lerp(c,float4(0.7,0.8,1.0,1.0),0.25)*max(diffuse2,0.0) + spec;			   
-			}
-
-			ENDCG
-		}
-	}
-}
+//			}
+//
+//			ENDCG
+//		}
+//	}
+//}
 //
 //	Properties {
 //		_Color ("Color", Color) = (1,1,1,1)
