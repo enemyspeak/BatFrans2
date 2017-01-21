@@ -120,6 +120,7 @@ public class movementHandler : MonoBehaviour {
 			temp_y_vel = velocity.y;
 		}
 
+
 		float temp_drag = drag_passive;
 		if (y_has_input || x_has_input) {
 			temp_drag = drag_active;
