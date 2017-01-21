@@ -22,7 +22,7 @@
 
 			float4 frag(v2f_img i) : COLOR {
 				float3 e = float3(float2(1.,1.)/_ScreenParams.xy,0.);
-				float2 q = i.uv.xy/_ScreenParams.xy;
+				float2 q = i.uv.xy;//_ScreenParams.xy;
 
 				float4 c = tex2D(_rt0, q);
 
@@ -41,10 +41,10 @@
 //				}
 //				else
 //				{
-					float t = mul(_Time.y,2.); //_Time.y*2.;
-					float2 pos = frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
-					float amp = 1.-step(.05,frac(t));
-					d = -amp*smoothstep(2.5,.5,length(pos - i.uv.xy));
+//					float t = mul(_Time.y,2.); //_Time.y*2.;
+//					float2 pos = frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
+//					float amp = 1.-step(.05,frac(t));
+//					d = -amp*smoothstep(2.5,.5,length(pos - i.uv.xy));
 //				}
 
 				d += -(p11-.5)*2. + (p10 + p01 + p21 + p12 - 2.);

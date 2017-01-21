@@ -64,7 +64,7 @@
 			#define TEXTURED 0
 
 			float4 frag(v2f_img i) : COLOR {
-			    float2 q = i.uv.xy;//_ScreenParams.xy;
+			 	float2 q = i.uv.xy;//_ScreenParams.xy;
 
 				#if TEXTURED == 1
 
