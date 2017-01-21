@@ -151,7 +151,7 @@ public class movementHandler : MonoBehaviour {
 //		transform.position = Vector2.Lerp (currentPosition, targetPosition, );
 		transform.position = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
 //		previousVelocity = velocity;
-
+		doSineWave();
 		doAnimation();
 	}
 
@@ -162,6 +162,12 @@ public class movementHandler : MonoBehaviour {
 		transform.localScale = s;
 
 		anim.Play("turnsmear");
+	}
+
+	void doSineWave() {
+		Vector2 currentPosition = transform.position;
+		currentPosition.y += Mathf.Sin (Time.fixedTime*2)/150;
+		transform.position = currentPosition;
 	}
 
 	void doAnimation() {

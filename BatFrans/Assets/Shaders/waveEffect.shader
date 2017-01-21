@@ -2,50 +2,10 @@
 
 	Properties {
 		_MainTex ("Texture", 2D) = "white" {}
-		_rt0 ("Texture", 2D) = "white" {}
+		_rt0 ("RenderTexture", 2D) = "white" {}
 	}
 
 	SubShader {
-		Pass {
-			CGPROGRAM
-
-			#pragma vertex MyVertexProgram
-			#pragma fragment MyFragmentProgram
-
-			#include "UnityCG.cginc"
-			float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
-
-//			void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-			   vec3 e = vec3(vec2(1.)/iResolution.xy,0.);
-			   vec2 q = fragCoord.xy/iResolution.xy;
-			   
-			   vec4 c = tex2D(iChannel0, q);
-			   
-			   float p11 = c.x;
-			   
-			   float p10 = tex2D(iChannel1, q-e.zy).x;
-			   float p01 = tex2D(iChannel1, q-e.xz).x;
-			   float p21 = tex2D(iChannel1, q+e.xz).x;
-			   float p12 = tex2D(iChannel1, q+e.zy).x;
-			   
-			   float d = 0.;
-
-			   // Mouse interaction:
-			   d = smoothstep(4.5,.5,length(iMouse.xy - fragCoord.xy));
-
-
-			   // The actual propagation:
-			   d += -(p11-.5)*2. + (p10 + p01 + p21 + p12 - 2.);
-			   d *= .99; // dampening
-			   d *= min(1.,float(iFrame)); // clear the buffer at iFrame == 0
-			   d = d*.5 + .5;
-			   
-			   fragColor = vec4(d, 0, 0, 0);
-			}
-
-
-			ENDCG
-		}
 		Pass {
 			CGPROGRAM
 
@@ -84,7 +44,7 @@
 
 			    float h = tex2D(_rt0, q).x;
 
-			    return float4(c,1.0,1.0,1.0);
+//			    return float4(c,1.0,1.0,1.0);
 
 
 			    float sh = 1.35 - h*2.;
