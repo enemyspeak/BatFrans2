@@ -1,15 +1,15 @@
 ﻿Shader "Custom/wave" {
 
 	Properties {
-		_FrameCount ("FrameCount", int) = 0 
-	    _SourcePosition ("SourcePosition", Vector) = (0,0,0,1)
+//		_FrameCount ("FrameCount", int) = 0 
+//	    _SourcePosition ("SourcePosition", Vector) = (0,0,0,1)
 		_rt0 ("Texture", 2D) = "white" {}
 		_rt1 ("RenderTexture", 2D) = "white" {}
 	}
 
 	SubShader {
 		Tags { "RenderType"="Opaque" }
-		LOD 200
+
 		Pass {
 			CGPROGRAM
 			#pragma vertex vert_img
@@ -17,12 +17,13 @@
 		
 			#include "UnityCG.cginc"
 
-			int _FrameCount;
-			float4 _SourcePosition;
+			uniform int _FrameCount;
+			uniform float4 _SourcePosition;
 			uniform sampler2D _rt0;
 			uniform sampler2D _rt1;
 
 			float4 frag(v2f_img i) : COLOR {
+
 //			   vec3 e = vec3(vec2(1.)/iResolution.xy,0.);
 //			   vec2 q = fragCoord.xy/iResolution.xy;
 //			   
@@ -73,13 +74,12 @@
 
 				float d = 0.;
 
-				//
-			    d = smoothstep(4.5,.5,length(_SourcePosition.xy - i.uv.xy));
-
-//				float t = _Time.z;
-//				float2 pos = frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
-//				float amp = 1.-step(.05,frac(t));
-//	  			d = -amp*smoothstep(2.5,0.5,length(pos - i.uv.xy));
+//			    d = smoothstep(4.5,.5,length(_SourcePosition.xy - i.uv.xy));
+//
+				float t = _Time.y * 2;
+				float2 pos = float2(0.,0.);//frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
+				float amp = 1.-step(.05,frac(t));
+	  			d = -amp*smoothstep(2.5,0.5,length(pos - i.uv.xy));
 
 	  			//
 				d += -(p11-.5)*2. + (p10 + p01 + p21 + p12 - 2.);
@@ -87,8 +87,7 @@
 				d *= min(1.,float(_FrameCount));
 				d = d*.5 + .5;
 
-//				return float4(d,0., 0., 0.);
-				return float4(float(_FrameCount)/10,0., 0., 0.);
+				return float4(d/100,0., 0., 0.);
 			}
 			ENDCG
 		}
