@@ -85,18 +85,19 @@ public class movementHandler : MonoBehaviour {
 			Vector2 currentPosition = transform.position;
 			Camera.main.gameObject.GetComponent<cameraHandler> ().panToWorldPosition (loverBat.transform.position);
 			StartCoroutine (startEndingMovement ());
+			StartCoroutine (goToCreditsYo ());
 			ending_cinemation = true;
 		}
 	}
 
 	IEnumerator goToCreditsYo() {
-		yield return new WaitForSeconds(13);
+		yield return new WaitForSeconds(16);
 //		loverBat.GetComponent<loverBatHandler> ().statEndCinemation ();
 		SceneManager.LoadScene("Win");
 	}
 
 	IEnumerator startEndingMovement() {
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(0.8f);
 		loverBat.GetComponent<loverBatHandler> ().statEndCinemation ();
 	}
 
@@ -166,8 +167,8 @@ public class movementHandler : MonoBehaviour {
 		} else if (ending_cinemation) {
 			lovePosition = loverBat.transform.position;
 			transform.position = new Vector2 (//Vector2.Lerp (transform.position, roomPosition, 1 );
-				Mathf.Lerp (currentPosition.x, (lovePosition.x - 1.0f), 1.5f * Time.deltaTime),
-				Mathf.Lerp (currentPosition.y, lovePosition.y, 1.5f * Time.deltaTime)
+				Mathf.Lerp (currentPosition.x, lovePosition.x, 1.75f * Time.deltaTime),
+				Mathf.Lerp (currentPosition.y, lovePosition.y, 1.75f * Time.deltaTime)
 			);				
 		} else {
 
