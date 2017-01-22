@@ -16,23 +16,23 @@
 			uniform sampler2D _rt0;
 			uniform sampler2D _MainTex;
 
-			#define TEXTURED 0
+			#define TEXTURED 1
 
 			float4 frag(v2f_img i) : COLOR {
 			 	float2 q = i.uv.xy;//_ScreenParams.xy;
 
 				#if TEXTURED == 1
-
-				    float3 e = float3(float2(1.0,1.0),0.0);
+					float3 e = float3(float2(1.0,1.0)/_ScreenParams.xy,0.0);
 
 				    float p10 = tex2D(_rt0, q-e.zy).x;
 				    float p01 = tex2D(_rt0, q-e.xz).x;
 				    float p21 = tex2D(_rt0, q+e.xz).x;
 				    float p12 = tex2D(_rt0, q+e.zy).x;
 
-
 				    float3 grad = normalize(float3(p21 - p01, p12 - p10, 1.0));
-				    float4 c = tex2D(_MainTex, i.uv.xy * 2.0); //+ grad.xy*.35);
+//				    float4 c = tex2D(_MainTex, i.uv.xy * 2.0); //+ grad.xy*.35);
+				    float4 c = tex2D(_MainTex, i.uv.xy*2./_ScreenParams.xy + grad.xy*.35);
+
 				    float3 light = normalize(float3(0.2,-0.5,0.7));
 				    float diffuse2 = dot(grad,light);
 				    float spec = pow(max(0.0,-reflect(light,grad).z),32.0);
