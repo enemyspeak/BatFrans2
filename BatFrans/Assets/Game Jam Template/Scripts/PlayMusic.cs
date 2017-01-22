@@ -31,17 +31,21 @@ public class PlayMusic : MonoBehaviour {
 		{
 			//If scene index is 0 (usually title scene) assign the clip titleMusic to musicSource
 			case 0:
-				musicSource.clip = titleMusic;
+				if (musicSource.clip != titleMusic) {
+					musicSource.clip = titleMusic;
+					FadeUp (resetTime);
+					musicSource.Play ();
+				}
 				break;
 			//If scene index is 1 (usually main scene) assign the clip mainMusic to musicSource
 			case 1:
-				musicSource.clip = mainMusic;
+				if (musicSource.clip != mainMusic) {
+					musicSource.clip = mainMusic;
+					FadeUp (resetTime);
+					musicSource.Play ();
+				}
 				break;
 		}
-		//Fade up the volume very quickly, over resetTime seconds (.01 by default)
-		FadeUp (resetTime);
-		//Play the assigned music clip in musicSource
-		musicSource.Play ();
 	}
 	
 	//Used if running the game in a single scene, takes an integer music source allowing you to choose a clip by number and play.
@@ -53,15 +57,19 @@ public class PlayMusic : MonoBehaviour {
 		{
 		//if musicChoice is 0 assigns titleMusic to audio source
 		case 0:
-			musicSource.clip = titleMusic;
+			if (musicSource.clip != titleMusic) {
+				musicSource.clip = titleMusic;
+				musicSource.Play ();
+			}
 			break;
 			//if musicChoice is 1 assigns mainMusic to audio source
 		case 1:
-			musicSource.clip = mainMusic;
+			if (musicSource.clip != mainMusic) {
+				musicSource.clip = mainMusic;
+				musicSource.Play ();
+			}
 			break;
 		}
-		//Play the selected clip
-		musicSource.Play ();
 	}
 
 	//Call this function to very quickly fade up the volume of master mixer
