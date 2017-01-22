@@ -28,10 +28,22 @@ public class movementHandler : MonoBehaviour {
 
 	private Animator anim;
 	private SpriteRenderer srenderer;
+	private AudioSource audio;
+
+	[Header("AudioClips")]
+	[SerializeField]
+	private AudioClip hurt;
+	[SerializeField]
+	private AudioClip eat;
+	[SerializeField]
+	private AudioClip scream;
+	[SerializeField]
+	private AudioClip woohoo;
 
 	void Start () {
 		srenderer = GetComponent<SpriteRenderer>();
 		anim = GetComponent<Animator>();
+		audio = GetComponent<AudioSource>();
 		//anim.Play("idleStand");
 	}
 
@@ -73,14 +85,16 @@ public class movementHandler : MonoBehaviour {
 			ui.UpdateHeartCount(hearts);
 
 			anim.SetTrigger("Hurt");
+			audio.PlayOneShot(hurt);
 
 			velocity *= -0.5f;
 			StartCoroutine (flashSprite ());
 			StartCoroutine (disableControlsLockout ());
 		} else if (collider.CompareTag ("Health")) {
 			Destroy(collider.gameObject);
-			hearts++;
+			hearts = hearts + collider.GetComponent<collectible>().healAmount;
 			ui.UpdateHeartCount(hearts);
+			audio.PlayOneShot(eat);
 		} else if (collider.CompareTag ("End")) {
 			Vector2 currentPosition = transform.position;
 			Camera.main.gameObject.GetComponent<cameraHandler> ().panToWorldPosition (loverBat.transform.position);
@@ -151,6 +165,7 @@ public class movementHandler : MonoBehaviour {
 	void doEcholocate () {
 		// send shader start pos and angle
 		anim.SetTrigger("Scream");
+		audio.PlayOneShot(scream);
 	}
 
 	// Update is called once per frame
