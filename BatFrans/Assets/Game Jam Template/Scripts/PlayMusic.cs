@@ -8,6 +8,7 @@ public class PlayMusic : MonoBehaviour {
 
 	public AudioClip titleMusic;					//Assign Audioclip for title music loop
 	public AudioClip mainMusic;						//Assign Audioclip for main 
+	public AudioClip endCinematicMusic;
 	public AudioMixerSnapshot volumeDown;			//Reference to Audio mixer snapshot in which the master volume of main mixer is turned down
 	public AudioMixerSnapshot volumeUp;				//Reference to Audio mixer snapshot in which the master volume of main mixer is turned up
 
@@ -46,6 +47,11 @@ public class PlayMusic : MonoBehaviour {
 				}
 				break;
 		}
+	}
+
+	public void PlayEndCinematicMusic(){
+		musicSource.clip = endCinematicMusic;
+		musicSource.Play();
 	}
 	
 	//Used if running the game in a single scene, takes an integer music source allowing you to choose a clip by number and play.
