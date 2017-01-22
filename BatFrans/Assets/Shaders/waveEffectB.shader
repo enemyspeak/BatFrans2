@@ -1,4 +1,4 @@
-﻿Shader "Custom/wave" {
+﻿Shader "Custom/waveB" {
 
 	Properties {
 //		_FrameCount ("FrameCount", int) = 0 
@@ -62,7 +62,7 @@
 
 				float3 e = float3(float2(1.,1.)/_ScreenParams.xy,0.);
 				float2 q = i.uv.xy;//_ScreenParams.xy;
-//				return float4 (q,1.,1.);
+
 				float4 c = tex2D(_rt0, q);
 
 				float p11 = c.x;
@@ -72,14 +72,14 @@
 				float p21 = tex2D(_rt1, q+e.xz).x;
 				float p12 = tex2D(_rt1, q+e.zy).x;
 
-				return float4(p10,p01,p21,p12);
+//				return float4(p10,p01,p21,p12);
 
 				float d = 0.;
 
 //			    d = smoothstep(4.5,.5,length(_SourcePosition.xy - i.uv.xy));
-//
+
 				float t = _Time.z;
-				float2 pos = float2(0.,0.);//frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
+				float2 pos = frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
 				float amp = 1.-step(.05,frac(t));
 	  			d = -amp*smoothstep(2.5,0.5,length(pos - i.uv.xy));
 
