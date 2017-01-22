@@ -106,6 +106,9 @@ public class movementHandler : MonoBehaviour {
 			StartCoroutine (startEndingMovement ());
 			StartCoroutine (goToCreditsYo ());
 			ending_cinemation = true;
+			audio.PlayOneShot(woohoo);
+			GameObject uiObject = GameObject.FindGameObjectWithTag("UI");
+			uiObject.GetComponent<PlayMusic>().PlayEndCinematicMusic();
 		}
 	}
 
@@ -122,7 +125,7 @@ public class movementHandler : MonoBehaviour {
 	}
 
 	IEnumerator goToCreditsYo() {
-		yield return new WaitForSeconds(13);
+		yield return new WaitForSeconds(18);
 //		loverBat.GetComponent<loverBatHandler> ().statEndCinemation ();
 		SceneManager.LoadScene("Win");
 	}
@@ -198,6 +201,7 @@ public class movementHandler : MonoBehaviour {
 			);				
 		} else if (ending_cinemation) {
 			lovePosition = loverBat.transform.position;
+			StartCoroutine(PlayHeartParticles());
 			transform.position = new Vector2 (//Vector2.Lerp (transform.position, roomPosition, 1 );
 				Mathf.Lerp (currentPosition.x, lovePosition.x, 1.75f * Time.deltaTime),
 				Mathf.Lerp (currentPosition.y, lovePosition.y, 1.75f * Time.deltaTime)

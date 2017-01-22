@@ -28,8 +28,8 @@ public class loverBatHandler : MonoBehaviour {
 				target = cinemationPosition.transform.position;
 			} else {
 				Debug.Log (time);
-				float x = Mathf.Sin( 1.0f * time * speed ) * ( Mathf.Sin (0.01f * time * speed ) * 200 );
-				float y = Mathf.Cos( 1.0f * time * speed ) * ( Mathf.Sin (0.01f * time * speed ) * 200 );
+				float x = Mathf.Sin( 1.0f * time * speed ) * ( Mathf.Sin (0.01f * time * speed ) * 150 );
+				float y = Mathf.Cos( 1.0f * time * speed ) * ( Mathf.Sin (0.01f * time * speed ) * 150 );
 				target = new Vector2 (currentPosition.x + x,currentPosition.y + y);// + height / 2);
 			}
 				
@@ -50,7 +50,7 @@ public class loverBatHandler : MonoBehaviour {
 	}
 
 	IEnumerator startEndingMovement() {
-		yield return new WaitForSeconds(8);
+		yield return new WaitForSeconds(13);
 		flyToTarget = true;
 	}
 }
