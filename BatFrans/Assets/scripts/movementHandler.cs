@@ -18,9 +18,11 @@ public class movementHandler : MonoBehaviour {
 
 	private int max_speed_sq;
 	private Vector2 roomPosition;
+	private Vector2 lovePosition; 
 
 	private bool tweening_rooms = false;
 	private bool hit_stun = false;
+	private bool ending_cinemation = false; 
 
 	public int hearts = 3;
 
@@ -80,10 +82,24 @@ public class movementHandler : MonoBehaviour {
 			hearts++;
 			ui.UpdateHeartCount(hearts);
 		} else if (collider.CompareTag ("End")) {
-			// TODO END CINEMATIC STUFF
+			Vector2 currentPosition = transform.position;
+			Camera.main.gameObject.GetComponent<cameraHandler> ().panToWorldPosition (loverBat.transform.position);
+			StartCoroutine (startEndingMovement ());
+			ending_cinemation = true;
 		}
 	}
-		
+
+	IEnumerator goToCreditsYo() {
+		yield return new WaitForSeconds(13);
+//		loverBat.GetComponent<loverBatHandler> ().statEndCinemation ();
+		SceneManager.LoadScene("Win");
+	}
+
+	IEnumerator startEndingMovement() {
+		yield return new WaitForSeconds(2);
+		loverBat.GetComponent<loverBatHandler> ().statEndCinemation ();
+	}
+
 	IEnumerator flashSprite() {
 		for(var n = 0; n < 3; n++)
 		{
@@ -146,6 +162,12 @@ public class movementHandler : MonoBehaviour {
 			transform.position = new Vector2 (//Vector2.Lerp (transform.position, roomPosition, 1 );
 				Mathf.Lerp (currentPosition.x, roomPosition.x, 0.3f * Time.deltaTime),
 				Mathf.Lerp (currentPosition.y, roomPosition.y, 0.3f * Time.deltaTime)
+			);				
+		} else if (ending_cinemation) {
+			lovePosition = loverBat.transform.position;
+			transform.position = new Vector2 (//Vector2.Lerp (transform.position, roomPosition, 1 );
+				Mathf.Lerp (currentPosition.x, (lovePosition.x - 1.0f), 1.5f * Time.deltaTime),
+				Mathf.Lerp (currentPosition.y, lovePosition.y, 1.5f * Time.deltaTime)
 			);				
 		} else {
 
