@@ -5,14 +5,14 @@
 	SubShader {
 		Pass {
 			CGPROGRAM
-			#pragma vertex vert_img
+			#pragma vertex vert
 			#pragma fragment frag
 		
 			#include "UnityCG.cginc"
 
 			uniform int firstOctave = 3;
 			uniform int octaves = 8;
-			uniform float persistence = 0.9;
+			uniform float persistence = 0.6;
 
 			uniform sampler2D _rt0; // mask
 			uniform sampler2D _MainTex;
@@ -78,18 +78,11 @@
 
 //			float4 frag(v2f_img i) : COLOR {
 			fixed4 frag(v2f i) : SV_Target {
-				float2 uv = i.position.xy/_ScreenParams.xy;
-                uv.x *= _ScreenParams.x/ _ScreenParams.y ;
-                float2 q = uv;
-//				q.y = 1-q.y;
-//				q.x = 1-q.x;
+				float2 q = i.position.xy/_ScreenParams.xy;
+			    float noise = .4+111.*PerlinNoise2D(q.x,q.y);
 
-//			    float noise = 0.3+6.*PerlinNoise2D(q.x,q.y);
-			    float noise = PerlinNoise2D(q.x,q.y);
-//			    float noise = doNoise(2.,1.5);
-//				return float4(q,0.,0.);
-//			    return float4(noise,noise,noise,1.0);
-				return float4(noise,.0,.0,1.0);
+//				return float4(q,1.,1.);
+			    return float4(noise,noise,noise,1.0);
 			}
 
 			ENDCG
