@@ -19,8 +19,6 @@ public class loverBatHandler : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (cinemationRunning) {
-			time += Time.deltaTime;
-
 			Vector2 currentPosition = transform.position;
 
 			if (flyToTarget) {
@@ -38,6 +36,7 @@ public class loverBatHandler : MonoBehaviour {
 				Mathf.Lerp (currentPosition.x, target.x, 0.15f * time),
 				Mathf.Lerp (currentPosition.y, target.y, 0.15f * time),
 				-10);
+			time += Time.deltaTime;
 		}
 	}
 
@@ -45,6 +44,7 @@ public class loverBatHandler : MonoBehaviour {
 		cinemationRunning = true;
 		Debug.Log ("running cinemation");
 		StartCoroutine (startEndingMovement ());
+		time = 0;
 	}
 
 	IEnumerator startEndingMovement() {
