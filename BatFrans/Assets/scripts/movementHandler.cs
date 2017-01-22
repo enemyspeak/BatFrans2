@@ -91,7 +91,7 @@ public class movementHandler : MonoBehaviour {
 	}
 
 	IEnumerator goToCreditsYo() {
-		yield return new WaitForSeconds(16);
+		yield return new WaitForSeconds(13);
 //		loverBat.GetComponent<loverBatHandler> ().statEndCinemation ();
 		SceneManager.LoadScene("Win");
 	}

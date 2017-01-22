@@ -45,7 +45,7 @@ public class loverBatHandler : MonoBehaviour {
 	}
 
 	IEnumerator startEndingMovement() {
-		yield return new WaitForSeconds(10f);
+		yield return new WaitForSeconds(8);
 		flyToTarget = true;
 	}
 }
