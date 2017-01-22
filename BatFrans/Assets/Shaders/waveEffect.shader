@@ -8,8 +8,8 @@
 	}
 
 	SubShader {
-		Tags { "RenderType"="Opaque" }
-
+//		Tags { "RenderType"="Opaque" }
+		Tags{ "Queue" = "Overlay" }
 		Pass {
 			CGPROGRAM
 			#pragma vertex vert_img
@@ -60,8 +60,9 @@
 //			   
 //			   fragColor = vec4(d, 0, 0, 0);
 
-				float3 e = float3(float2(1.,1.)/_ScreenParams.xy,0.);
+				float3 e = float3(1.0,1.0,0.0);//float3(float2(1.,1.)/_ScreenParams.xy,0.);
 				float2 q = i.uv.xy;//_ScreenParams.xy;
+				q.y = -q.y;
 //				return float4 (q,1.,1.);
 				float4 c = tex2D(_rt0, q);
 
@@ -79,14 +80,14 @@
 //			    d = smoothstep(4.5,.5,length(_SourcePosition.xy - i.uv.xy));
 //
 				float t = _Time.z;
-				float2 pos = float2(0.,0.);//frac(floor(t)*float2(0.456665,0.708618))*_ScreenParams.xy;
+				float2 pos = frac(floor(t)*float2(0.456665,0.708618))*float2(10.,20.)/_ScreenParams.xy;
 				float amp = 1.-step(.05,frac(t));
 	  			d = -amp*smoothstep(2.5,0.5,length(pos - i.uv.xy));
 
 	  			//
 				d += -(p11-.5)*2. + (p10 + p01 + p21 + p12 - 2.);
-				d *= .99; // dampening
-				d *= min(1.,float(_FrameCount));
+				d = mul(d,.99); // dampening
+				d = mul(min(1.,float(_FrameCount)),d);
 				d = d*.5 + .5;
 
 				return float4(d,0., 0., 0.);
