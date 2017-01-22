@@ -15,6 +15,8 @@ public class movementHandler : MonoBehaviour {
 	[SerializeField] private Animator gameOverWipe;
 	[SerializeField] private PlayerUI ui;
 	[SerializeField] GameObject loverBat;
+	[SerializeField] ParticleSystem heartParticles;
+	[SerializeField] ParticleSystem starParticles;
 
 	private int max_speed_sq;
 	private Vector2 roomPosition;
@@ -44,7 +46,8 @@ public class movementHandler : MonoBehaviour {
 		srenderer = GetComponent<SpriteRenderer>();
 		anim = GetComponent<Animator>();
 		audio = GetComponent<AudioSource>();
-		//anim.Play("idleStand");
+		StartCoroutine(PlayHeartParticles());
+		starParticles.Stop();
 	}
 
 	void OnTriggerEnter2D (Collider2D collider) {
@@ -86,6 +89,7 @@ public class movementHandler : MonoBehaviour {
 
 			anim.SetTrigger("Hurt");
 			audio.PlayOneShot(hurt);
+			StartCoroutine(PlayStarParticles());
 
 			velocity *= -0.5f;
 			StartCoroutine (flashSprite ());
@@ -95,6 +99,7 @@ public class movementHandler : MonoBehaviour {
 			hearts = hearts + collider.GetComponent<collectible>().healAmount;
 			ui.UpdateHeartCount(hearts);
 			audio.PlayOneShot(eat);
+			StartCoroutine(PlayHeartParticles());
 		} else if (collider.CompareTag ("End")) {
 			Vector2 currentPosition = transform.position;
 			Camera.main.gameObject.GetComponent<cameraHandler> ().panToWorldPosition (loverBat.transform.position);
@@ -102,6 +107,18 @@ public class movementHandler : MonoBehaviour {
 			StartCoroutine (goToCreditsYo ());
 			ending_cinemation = true;
 		}
+	}
+
+	IEnumerator PlayStarParticles() {
+		starParticles.Play();
+		yield return new WaitForSeconds(1f);
+		starParticles.Stop();
+	}
+
+	IEnumerator PlayHeartParticles() {
+		heartParticles.Play();
+		yield return new WaitForSeconds(2f);
+		heartParticles.Stop();
 	}
 
 	IEnumerator goToCreditsYo() {
