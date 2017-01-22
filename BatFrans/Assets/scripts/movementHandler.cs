@@ -14,6 +14,7 @@ public class movementHandler : MonoBehaviour {
 	[SerializeField] private Vector2 velocity = new Vector2(0,0);
 	[SerializeField] private Animator gameOverWipe;
 	[SerializeField] private PlayerUI ui;
+	[SerializeField] GameObject loverBat;
 
 	private int max_speed_sq;
 	private Vector2 roomPosition;
@@ -78,6 +79,8 @@ public class movementHandler : MonoBehaviour {
 			Destroy(collider.gameObject);
 			hearts++;
 			ui.UpdateHeartCount(hearts);
+		} else if (collider.CompareTag ("End")) {
+			// TODO END CINEMATIC STUFF
 		}
 	}
 		
