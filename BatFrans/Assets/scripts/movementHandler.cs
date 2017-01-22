@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class movementHandler : MonoBehaviour {
 	private bool flipped = false;
@@ -11,6 +12,8 @@ public class movementHandler : MonoBehaviour {
 	[SerializeField] private int max_speed = 50;
 //	[SerializeField] private float deadZone = 0.005f;
 	[SerializeField] private Vector2 velocity = new Vector2(0,0);
+	[SerializeField] private Animator gameOverWipe;
+	[SerializeField] private PlayerUI ui;
 
 	private int max_speed_sq;
 	private Vector2 roomPosition;
@@ -18,7 +21,7 @@ public class movementHandler : MonoBehaviour {
 	private bool tweening_rooms = false;
 	private bool hit_stun = false;
 
-	private int hearts = 3;
+	public int hearts = 3;
 
 	private Animator anim;
 	private SpriteRenderer srenderer;
@@ -26,7 +29,7 @@ public class movementHandler : MonoBehaviour {
 	void Start () {
 		srenderer = GetComponent<SpriteRenderer>();
 		anim = GetComponent<Animator>();
-		anim.Play("idleStand");
+		//anim.Play("idleStand");
 	}
 
 	void OnTriggerEnter2D (Collider2D collider) {
@@ -57,7 +60,14 @@ public class movementHandler : MonoBehaviour {
 				return;
 			}
 			hit_stun = true;
+
 			hearts--;
+
+			if(hearts <= 0){
+				GameOver();
+			}
+
+			ui.UpdateHeartCount(hearts);
 
 			anim.SetTrigger("Hurt");
 
@@ -67,6 +77,7 @@ public class movementHandler : MonoBehaviour {
 		} else if (collider.CompareTag ("Health")) {
 			Destroy(collider.gameObject);
 			hearts++;
+			ui.UpdateHeartCount(hearts);
 		}
 	}
 		
@@ -271,5 +282,17 @@ public class movementHandler : MonoBehaviour {
 		Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePos.z = 0;
 		transform.position = mousePos;
+	}
+
+	private void GameOver(){
+		anim.SetTrigger("Death");
+		srenderer.sortingLayerName = "Foreground";
+		gameOverWipe.SetTrigger("Wipe");
+		StartCoroutine(ResetScene());
+	}
+
+	private IEnumerator ResetScene(){
+		yield return new WaitForSeconds(3.0f);
+		SceneManager.LoadScene("Cave");
 	}
 }

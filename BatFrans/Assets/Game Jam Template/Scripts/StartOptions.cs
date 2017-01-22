@@ -34,6 +34,14 @@ public class StartOptions : MonoBehaviour {
 		playMusic = GetComponent<PlayMusic> ();
 	}
 
+	void Update(){
+		if(SceneManager.GetActiveScene().name == "Menu"){
+			if(Input.GetKeyUp(KeyCode.Space)){
+				StartButtonClicked();
+			}
+		}
+	}
+
 
 	public void StartButtonClicked()
 	{
