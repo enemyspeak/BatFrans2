@@ -16,7 +16,7 @@
 			uniform sampler2D _rt0;
 			uniform sampler2D _MainTex;
 
-			#define TEXTURED 0
+			#define TEXTURED 1
 
 			float4 frag(v2f_img i) : COLOR {
 			 	float2 q = i.uv.xy;//_ScreenParams.xy;
@@ -36,8 +36,8 @@
 				    float diffuse2 = dot(grad,light);
 				    float spec = pow(max(0.0,-reflect(light,grad).z),32.0);
 
-				    return float4(c);
-//				    return lerp(c,float4(0.7,0.8,1.0,1.0),0.25)*max(diffuse2,0.0) + spec;	
+//				    return float4(c);
+				    return lerp(c,float4(0.7,0.8,1.0,1.0),0.25)*max(diffuse2,0.0) + spec;	
 
 				#else
 
