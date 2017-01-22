@@ -59,21 +59,24 @@ public class movementHandler : MonoBehaviour {
 			hit_stun = true;
 			hearts--;
 
-			// TODO animation hook here
+			anim.SetTrigger("Hurt");
 
-			velocity = -velocity;
+			velocity *= -0.5f;
 			StartCoroutine (flashSprite ());
 			StartCoroutine (disableControlsLockout ());
+		} else if (collider.CompareTag ("Health")) {
+			Destroy(collider.gameObject);
+			hearts++;
 		}
 	}
 		
 	IEnumerator flashSprite() {
-		for(var n = 0; n < 4; n++)
+		for(var n = 0; n < 3; n++)
 		{
 			srenderer.enabled = true;
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.05f);
 			srenderer.enabled = false;
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.05f);
 		}
 		srenderer.enabled = true;
 	}
@@ -82,7 +85,6 @@ public class movementHandler : MonoBehaviour {
 		yield return new WaitForSeconds(1);
 		tweening_rooms = false;
 		hit_stun = false;
-//		Debug.Log ("enabled");
 	}
 
 	void OnTriggerExit2D (Collider2D c) {
@@ -117,7 +119,7 @@ public class movementHandler : MonoBehaviour {
 
 	void doEcholocate () {
 		// send shader start pos and angle
-
+		anim.SetTrigger("Scream");
 	}
 
 	// Update is called once per frame
@@ -137,6 +139,14 @@ public class movementHandler : MonoBehaviour {
 
 			bool x_has_input = false;
 			bool y_has_input = false;
+
+			//if (Input.GetAxis("Jump") == 1) {
+			//	doEcholocate();
+			//}
+
+			if (Input.GetKeyUp(KeyCode.Space)) {
+				doEcholocate();
+			}
 
 			if (Input.GetAxis("Horizontal") != 0) 
 			{
@@ -191,7 +201,7 @@ public class movementHandler : MonoBehaviour {
 
 			transform.position = new Vector2(currentPosition.x + velocity.x * Time.deltaTime, currentPosition.y + velocity.y * Time.deltaTime);
 		}
-		doSineWave();
+		//doSineWave();
 		doAnimation();
 	}
 
@@ -206,11 +216,12 @@ public class movementHandler : MonoBehaviour {
 
 	void doSineWave() {
 		Vector2 currentPosition = transform.position;
-		currentPosition.y += Mathf.Sin (Time.fixedTime*2)/150;
+		currentPosition.y += Mathf.Sin (Time.fixedTime*8f)/150;
 		transform.position = currentPosition;
 	}
 
 	void doAnimation() {
+		
 //		if (barking) {
 //			anim.Play("bark");
 //			idleCounter = 0;
