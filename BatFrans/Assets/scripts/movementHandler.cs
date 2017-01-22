@@ -65,6 +65,7 @@ public class movementHandler : MonoBehaviour {
 			StartCoroutine (flashSprite ());
 			StartCoroutine (disableControlsLockout ());
 		} else if (collider.CompareTag ("Health")) {
+			Destroy(collider.gameObject);
 			hearts++;
 		}
 	}
