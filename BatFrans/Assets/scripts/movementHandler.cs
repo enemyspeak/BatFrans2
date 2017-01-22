@@ -13,6 +13,7 @@ public class movementHandler : MonoBehaviour {
 //	[SerializeField] private float deadZone = 0.005f;
 	[SerializeField] private Vector2 velocity = new Vector2(0,0);
 	[SerializeField] private Animator gameOverWipe;
+	[SerializeField] private PlayerUI ui;
 
 	private int max_speed_sq;
 	private Vector2 roomPosition;
@@ -20,7 +21,7 @@ public class movementHandler : MonoBehaviour {
 	private bool tweening_rooms = false;
 	private bool hit_stun = false;
 
-	private int hearts = 3;
+	public int hearts = 3;
 
 	private Animator anim;
 	private SpriteRenderer srenderer;
@@ -65,6 +66,8 @@ public class movementHandler : MonoBehaviour {
 			if(hearts <= 0){
 				GameOver();
 			}
+
+			ui.UpdateHeartCount(hearts);
 
 			anim.SetTrigger("Hurt");
 
