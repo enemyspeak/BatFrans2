@@ -77,6 +77,7 @@ public class movementHandler : MonoBehaviour {
 		} else if (collider.CompareTag ("Health")) {
 			Destroy(collider.gameObject);
 			hearts++;
+			ui.UpdateHeartCount(hearts);
 		}
 	}
 		
